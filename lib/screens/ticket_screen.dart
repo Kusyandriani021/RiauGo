@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../services/ticket_pdf_service.dart';
+
+
 class TicketScreen extends StatelessWidget {
   const TicketScreen({super.key});
 
@@ -155,6 +158,43 @@ class TicketScreen extends StatelessWidget {
                             'Metode Bayar: ${data['paymentMethod'] ?? '-'}',
                           ),
                           const SizedBox(height: 16),
+
+                          // Tombol cetak PDF (tetap tampil walau tiket dibatalkan agar user bisa arsip)
+                          SizedBox(
+                            width: double.infinity,
+                            height: 45,
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                TicketPdfService.printTicketPdf(
+                                  context: context,
+                                  destinationName: data['destinationName'] ?? '-',
+                                  jumlahTiket: data['jumlahTiket'] ?? 1,
+                                  price: data['price'] ?? '-',
+                                  paymentMethod: data['paymentMethod'] ?? '-',
+                                  status: status,
+                                  isCancelled: isCancelled,
+                                  ticketId: doc.id,
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.picture_as_pdf,
+                                color: Color(0xFF007A33),
+                              ),
+                              label: const Text(
+                                'Cetak PDF',
+                                style: TextStyle(color: Color(0xFF007A33)),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: Color(0xFF007A33)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          if (!isCancelled)
+                            const SizedBox(height: 12),
 
                           if (!isCancelled)
                             SizedBox(
